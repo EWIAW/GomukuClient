@@ -1,0 +1,141 @@
+#include "NetworkManager.h"
+
+NetworkManager *NetworkManager::m_instance = nullptr;
+
+NetworkManager::NetworkManager(QObject *parent)
+  : QObject(parent),
+    m_socket(new QTcpSocket(this))
+{
+    connect(m_socket, &QTcpSocket::connected, this, &NetworkManager::onConnected);
+    connect(m_socket, &QTcpSocket::readyRead, this, &NetworkManager::onReadyRead);
+    connect(m_socket, &QTcpSocket::disconnected, this, &NetworkManager::onDisconnected);
+}
+
+NetworkManager *NetworkManager::instance()
+{
+    if (!m_instance)
+    {
+        m_instance = new NetworkManager();
+    }
+    return m_instance;
+}
+
+void NetworkManager::connectToServer(const QString &host, quint16 port)
+{
+    m_socket->connectToHost(host, port);
+}
+
+void NetworkManager::disconnectToServer()
+{
+    if (m_socket->state() == QTcpSocket::ConnectedState)
+    {
+        m_socket->disconnectFromHost();
+    }
+}
+
+bool NetworkManager::isConnected() const
+{
+    return m_socket->state() == QTcpSocket::ConnectedState;
+}
+
+void NetworkManager::sendMessage(int protocol, const QJsonObject &data)
+{
+    if (!isConnected())
+    {
+        qWarning() << "Not connected to server";
+        return;
+    }
+
+    //构造json数据，即 协议号+data数据
+    QJsonObject jsonData;
+    jsonData["protocol"] = protocol;
+    jsonData["data"] = data;
+
+    //将上面的json数据转换成ByteArray
+    QJsonDocument doc(jsonData);
+    QByteArray jsonByteArray = doc.toJson(QJsonDocument::Compact);
+
+    // 构造消息格式: [数据长度][协议号][JSON数据]
+    QByteArray messagePacket;//真正要发送的数据
+    qint32 jsonStringLength = jsonByteArray.size();
+    qint32 bigEndianLen = qToBigEndian(jsonStringLength);//将长度转换为大端字节序
+    messagePacket.append(reinterpret_cast<const char *>(&bigEndianLen), sizeof(quint32));
+    messagePacket.append(jsonByteArray);
+
+    qDebug()<<jsonStringLength;
+    qDebug()<<doc;
+    m_socket->write(messagePacket);
+    m_socket->flush();
+}
+
+void NetworkManager::onReadyRead()
+{
+    m_buffer.append(m_socket->readAll());
+
+    //判断是否有完整的消息
+    while (m_buffer.size() >= 4)
+    {
+        int netLength;//网络字节序
+        memcpy(&netLength, m_buffer.constData(), sizeof(int));
+        int hostLength = qFromBigEndian(netLength);//主机字节序
+
+        if (hostLength > m_buffer.size() - 4)
+        {
+            // 数据不完整，等待更多数据
+            break;
+        }
+
+        // 提取一条完整JSON数据
+        QByteArray jsonData = m_buffer.mid(4,hostLength);
+        m_buffer.remove(0,4+hostLength);
+
+        qDebug()<<"Recv the message size: "<<hostLength;
+        qDebug()<<jsonData;
+
+        // 解析成json类型并处理
+        parseMessage(jsonData);
+    }
+}
+
+void NetworkManager::onConnected()
+{
+
+}
+
+void NetworkManager::onDisconnected()
+{
+
+}
+
+void NetworkManager::parseMessage(QByteArray data)
+{
+    QJsonParseError error;
+    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
+
+    if (error.error != QJsonParseError::NoError)
+    {
+        qWarning() << "Failed to parse JSON:" << error.errorString();
+        return;
+    }
+
+    QJsonObject message = doc.object();
+
+    int protocol = message["protocol"].toInt();
+    QJsonObject jsondata = message["data"].toObject();
+    if(protocol == 1)//注册响应
+    {
+        bool result = jsondata["success"].toBool();
+        QString reason;//如果有
+        if(result == false)
+        {
+           reason = jsondata["reason"].toString();
+        }
+        emit registerResponse(result,reason);
+    }
+    else if(protocol == 3)//登录响应
+    {
+        bool result = jsondata["success"].toBool();
+        emit loginResponse(result);//登录响应信号
+        emit userInfoResponse(jsondata);
+    }
+}
