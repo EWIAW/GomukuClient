@@ -120,9 +120,9 @@ void NetworkManager::parseMessage(QByteArray data)
 
     QJsonObject message = doc.object();
 
-    int protocol = message["protocol"].toInt();
+    int protocolId = message["protocol"].toInt();
     QJsonObject jsondata = message["data"].toObject();
-    if(protocol == 1)//注册响应
+    if(protocolId == 1002)//注册响应
     {
         bool result = jsondata["success"].toBool();
         QString reason;//如果有
@@ -132,7 +132,7 @@ void NetworkManager::parseMessage(QByteArray data)
         }
         emit registerResponse(result,reason);
     }
-    else if(protocol == 3)//登录响应
+    else if(protocolId == 1004)//登录响应
     {
         bool result = jsondata["success"].toBool();
         emit loginResponse(result);//登录响应信号

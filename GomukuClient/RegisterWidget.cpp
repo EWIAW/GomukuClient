@@ -35,7 +35,7 @@ void RegisterWidget::onRegisterButtonClicked()
         QJsonObject message;
         message["username"] = username;
         message["password"] = password;
-        NetworkManager::instance()->sendMessage(Protocol::REGISTER_REQUEST,message);
+        NetworkManager::instance()->sendMessage(ProtocolId::REGISTER_REQ,message);
     }
 }
 

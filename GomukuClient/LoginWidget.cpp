@@ -41,7 +41,7 @@ void LoginWidget::onLoginButtonClicked()
         QJsonObject message;
         message["username"] = username;
         message["password"] = password;
-        NetworkManager::instance()->sendMessage(Protocol::LOGIN_REQUEST,message);
+        NetworkManager::instance()->sendMessage(ProtocolId::LOGIN_REQ,message);
     }
 }
 
