@@ -42,12 +42,9 @@ void RegisterWidget::onRegisterButtonClicked()
 //与NetworkManager通信槽函数
 void RegisterWidget::onRegisterResult(bool success,QString reason)
 {
+    QMessageBox::warning(this,"提示",reason);
     if(success)
     {
         emit gotoLoginWidget_Signal();//发送信号告诉MainWidget跳转页面
-    }
-    else
-    {
-        QMessageBox::warning(this,"提示",reason);
     }
 }

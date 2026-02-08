@@ -125,17 +125,20 @@ void NetworkManager::parseMessage(QByteArray data)
     if(protocolId == 1002)//注册响应
     {
         bool result = jsondata["success"].toBool();
-        QString reason;//如果有
-        if(result == false)
-        {
-           reason = jsondata["reason"].toString();
-        }
+        QString reason = jsondata["reason"].toString();
         emit registerResponse(result,reason);
     }
     else if(protocolId == 1004)//登录响应
     {
         bool result = jsondata["success"].toBool();
-        emit loginResponse(result);//登录响应信号
-        emit userInfoResponse(jsondata);
+        QString reason = jsondata["reason"].toString();
+        QJsonObject userInfo;
+        userInfo["userId"] = jsondata["userId"];
+        userInfo["userName"] = jsondata["userName"];
+        userInfo["userPoint"] = jsondata["userPoint"];
+        userInfo["totalCount"] = jsondata["totalCount"];
+        userInfo["winCount"] = jsondata["winCount"];
+        emit loginResponse(result,reason);//登录响应信号
+        emit userInfoResponse(userInfo);//用户信息响应信号
     }
 }

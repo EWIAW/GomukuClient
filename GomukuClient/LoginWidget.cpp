@@ -46,14 +46,11 @@ void LoginWidget::onLoginButtonClicked()
 }
 
 //与NetworkManager通信槽函数
-void LoginWidget::onLoginResult(bool success)
+void LoginWidget::onLoginResult(bool success,QString reason)
 {
+    QMessageBox::warning(this,"提示",reason);
     if(success)
     {
         emit gotoGameHallWidget_Signal();//发送信号告诉MainWidget跳转页面
-    }
-    else
-    {
-        QMessageBox::warning(this,"提示","用户名或密码错误");
     }
 }

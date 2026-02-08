@@ -25,7 +25,7 @@ private slots:
     void onLoginButtonClicked();//点击登录
 
     //与NetworkManager通信槽函数
-    void onLoginResult(bool success);
+    void onLoginResult(bool success,QString reason);
 
 private:
     Ui::LoginWidget *ui;

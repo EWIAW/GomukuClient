@@ -46,9 +46,9 @@ public:
     void sendMessage(int protocol, const QJsonObject &data);
 
 signals:
-    void registerResponse(bool success,QString reason);//注册响应
-    void loginResponse(bool success);//登录响应信号
-    void userInfoResponse(const QJsonObject& jsondata);
+    void registerResponse(bool success,QString reason);//注册响应信号
+    void loginResponse(bool success,QString reason);//登录响应信号
+    void userInfoResponse(const QJsonObject& jsondata);//用户信息响应信号
 
 private slots:
     void onReadyRead();
