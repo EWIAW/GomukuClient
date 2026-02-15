@@ -8,6 +8,7 @@
 #include "RegisterWidget.h"
 #include "LoginWidget.h"
 #include "GameHallWidget.h"
+#include "GameRoomWidget.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWidget; }
@@ -25,9 +26,10 @@ public:
     void initAllGoto();//连接所有跳转信号
 
 private slots:
-    void gotoRegisterWidget();
-    void gotoLoginWidget();
-    void gotoGameHallWidget();
+    void gotoRegisterWidget();//跳转到注册页面
+    void gotoLoginWidget();//跳转到登录页面
+    void gotoGameHallWidget();//跳转到游戏大厅页面
+    void gotoGameRoomWidget();//跳转到游戏房间页面
 
 private:
     Ui::MainWidget *ui;
@@ -36,5 +38,6 @@ private:
     RegisterWidget* m_registerWidget;
     LoginWidget* m_loginWidget;
     GameHallWidget* m_gamehallWidget;
+    GameRoomWidget* m_gameroomWidget;
 };
 #endif // MAINWIDGET_H

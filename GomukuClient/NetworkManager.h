@@ -18,12 +18,15 @@ enum ProtocolId
     REGISTER_REQ = 1001, // 注册请求
     REGISTER_ACK = 1002, // 注册响应
     LOGIN_REQ = 1003,    // 登录请求
-    LOGIN_ACK = 1004,    // 登录请求
+    LOGIN_ACK = 1004,    // 登录响应
 
     // // 匹配模块 2000-2999
-    // MATCH_START = 2001,   // 发起匹配
-    // MATCH_CANCEL = 2002,  // 取消匹配
-    // MATCH_SUCCESS = 2003, // 匹配成功推送
+    MATCH_START_REQ = 2001,  // 发起匹配请求
+    MATCH_START_ACK = 2002,  // 发起匹配响应
+    MATCH_CANCEL_REQ = 2003, // 取消匹配请求
+    MATCH_CANCEL_ACK = 2004, // 取消匹配响应
+
+    MATCH_PUSH = 2006,   // 匹配结果推送
 
     // // 对战模块 3000-3999
     // CHESS_DOWN = 3001, // 落子请求
@@ -31,7 +34,8 @@ enum ProtocolId
     // AME_OVER = 3003,  // 对局结束推送
 
     // // 聊天模块 4000-4999
-    // PROTO_ID_GAME_CHAT = 4001 // 局内聊天
+    GAME_CHAT_REQ = 4001, // 局内聊天请求
+    GAME_CHAT_ACK = 4002, // 局内聊天响应
 };
 
 class NetworkManager : public QObject
@@ -50,6 +54,12 @@ signals:
     void loginResponse(bool success,QString reason);//登录响应信号
     void userInfoResponse(const QJsonObject& jsondata);//用户信息响应信号
 
+    void startMatchResponse(bool result,QString reason);//开始匹配响应
+    void cancelMatchResponse(bool result,QString reason);//取消匹配响应
+    void matchResultPush(bool result,QString reason);//匹配结果推送
+
+    void chatResponse(QString msg);//聊天响应信号
+
 private slots:
     void onReadyRead();
     void onConnected();
@@ -57,7 +67,7 @@ private slots:
 
 private:
     explicit NetworkManager(QObject *parent = nullptr);
-    void parseMessage(QByteArray data);//将服务器传过来的数据进行解析分发
+    void parseMessage(QJsonDocument doc);//将服务器传过来的数据进行解析分发
 
     QTcpSocket *m_socket;
     QByteArray m_buffer;

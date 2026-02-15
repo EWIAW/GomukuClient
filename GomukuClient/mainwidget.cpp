@@ -34,10 +34,12 @@ void MainWidget::initAllWidget()//创建所有界面
     m_registerWidget = new RegisterWidget(this);
     m_loginWidget = new LoginWidget(this);
     m_gamehallWidget = new GameHallWidget(this);
+    m_gameroomWidget = new GameRoomWidget(this);
 
     m_stackWidget->addWidget(m_registerWidget);
     m_stackWidget->addWidget(m_loginWidget);
     m_stackWidget->addWidget(m_gamehallWidget);
+    m_stackWidget->addWidget(m_gameroomWidget);
 }
 
 void MainWidget::initAllGoto()//连接所有跳转信号
@@ -48,6 +50,10 @@ void MainWidget::initAllGoto()//连接所有跳转信号
     //登录界面的跳转
     connect(m_loginWidget,&LoginWidget::gotoRegisterWidget_Signal,this,&MainWidget::gotoRegisterWidget);
     connect(m_loginWidget,&LoginWidget::gotoGameHallWidget_Signal,this,&MainWidget::gotoGameHallWidget);
+
+    //游戏大厅界面的跳转
+    connect(m_gamehallWidget,&GameHallWidget::gotoGameRoomWidget_Signal,this,&MainWidget::gotoGameRoomWidget);
+
 }
 
 void MainWidget::gotoRegisterWidget()
@@ -63,4 +69,9 @@ void MainWidget::gotoLoginWidget()
 void MainWidget::gotoGameHallWidget()
 {
     m_stackWidget->setCurrentWidget(m_gamehallWidget);
+}
+
+void MainWidget::gotoGameRoomWidget()
+{
+    m_stackWidget->setCurrentWidget(m_gameroomWidget);
 }

@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>260</x>
@@ -29,7 +29,7 @@
     <item>
      <widget class="QPushButton" name="match_pushButton">
       <property name="text">
-       <string>PushButton</string>
+       <string>开始匹配</string>
       </property>
      </widget>
     </item>

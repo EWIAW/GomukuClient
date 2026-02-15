@@ -1,5 +1,8 @@
 #include "NetworkManager.h"
 
+#include <QDebug>
+#include <QThread>
+
 NetworkManager *NetworkManager::m_instance = nullptr;
 
 NetworkManager::NetworkManager(QObject *parent)
@@ -62,7 +65,7 @@ void NetworkManager::sendMessage(int protocol, const QJsonObject &data)
     messagePacket.append(reinterpret_cast<const char *>(&bigEndianLen), sizeof(quint32));
     messagePacket.append(jsonByteArray);
 
-    qDebug()<<jsonStringLength;
+    qDebug()<<"发送实际数据大小 : "<<4+jsonStringLength<<" , 有效数据大小 : "<<jsonStringLength;
     qDebug()<<doc;
     m_socket->write(messagePacket);
     m_socket->flush();
@@ -75,6 +78,7 @@ void NetworkManager::onReadyRead()
     //判断是否有完整的消息
     while (m_buffer.size() >= 4)
     {
+        //获取消息体的大小
         int netLength;//网络字节序
         memcpy(&netLength, m_buffer.constData(), sizeof(int));
         int hostLength = qFromBigEndian(netLength);//主机字节序
@@ -82,6 +86,8 @@ void NetworkManager::onReadyRead()
         if (hostLength > m_buffer.size() - 4)
         {
             // 数据不完整，等待更多数据
+            qDebug()<<"数据不完整 , 等待更多数据: "<<(m_buffer.size() - 4)<<"/"<<hostLength;
+            qDebug()<<m_buffer;
             break;
         }
 
@@ -89,11 +95,22 @@ void NetworkManager::onReadyRead()
         QByteArray jsonData = m_buffer.mid(4,hostLength);
         m_buffer.remove(0,4+hostLength);
 
-        qDebug()<<"Recv the message size: "<<hostLength;
-        qDebug()<<jsonData;
+        //将提取出来的数据转换成json
+        QJsonParseError error;
+        QJsonDocument doc = QJsonDocument::fromJson(jsonData, &error);
+        if (error.error != QJsonParseError::NoError)
+        {
+            qWarning() << "无法解析成json数据 : " << error.errorString();
+            qWarning() << jsonData;
+            return;
+        }
 
+        qDebug()<<"接收实际数据大小 : "<<4+hostLength<<" , 有效数据大小 : "<<hostLength;
+        qDebug()<<doc;
+        qDebug()<<" ";
+//        QThread::msleep(1000);  // 暂停1秒
         // 解析成json类型并处理
-        parseMessage(jsonData);
+        parseMessage(doc);
     }
 }
 
@@ -107,17 +124,8 @@ void NetworkManager::onDisconnected()
 
 }
 
-void NetworkManager::parseMessage(QByteArray data)
+void NetworkManager::parseMessage(QJsonDocument doc)
 {
-    QJsonParseError error;
-    QJsonDocument doc = QJsonDocument::fromJson(data, &error);
-
-    if (error.error != QJsonParseError::NoError)
-    {
-        qWarning() << "Failed to parse JSON:" << error.errorString();
-        return;
-    }
-
     QJsonObject message = doc.object();
 
     int protocolId = message["protocol"].toInt();
@@ -140,5 +148,29 @@ void NetworkManager::parseMessage(QByteArray data)
         userInfo["winCount"] = jsondata["winCount"];
         emit loginResponse(result,reason);//登录响应信号
         emit userInfoResponse(userInfo);//用户信息响应信号
+    }
+    else if(protocolId == 2002)// 发起匹配响应
+    {
+        bool result = jsondata["success"].toBool();
+        QString reason = jsondata["reason"].toString();
+        emit startMatchResponse(result,reason);
+    }
+    else if(protocolId == 2004)// 取消匹配响应
+    {
+        bool result = jsondata["success"].toBool();
+        QString reason = jsondata["reason"].toString();
+        emit cancelMatchResponse(result,reason);
+    }
+    else if(protocolId == 2006)// 匹配结果推送
+    {
+//        qDebug()<<"处理2006协议";
+        bool result = jsondata["success"].toBool();
+        QString reason = jsondata["reason"].toString();
+        emit matchResultPush(result,reason);
+    }
+    else if(protocolId == 4002)//聊天响应信号
+    {
+        QString msg = jsondata["message"].toString();
+        emit chatResponse(msg);
     }
 }
