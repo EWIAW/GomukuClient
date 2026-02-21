@@ -29,9 +29,10 @@ enum ProtocolId
     MATCH_PUSH = 2006,   // 匹配结果推送
 
     // // 对战模块 3000-3999
-    // CHESS_DOWN = 3001, // 落子请求
-    // CHESS_SYNC = 3002, // 棋局同步推送
-    // AME_OVER = 3003,  // 对局结束推送
+    CHESS_DOWN_REQ = 3001, // 落子请求
+    CHESS_DOWN_ACK = 3002, // 落子响应
+//    CHESS_SYNC = 3002, // 棋局同步推送
+//    AME_OVER = 3003,  // 对局结束推送
 
     // // 聊天模块 4000-4999
     GAME_CHAT_REQ = 4001, // 局内聊天请求
@@ -57,6 +58,9 @@ signals:
     void startMatchResponse(bool result,QString reason);//开始匹配响应
     void cancelMatchResponse(bool result,QString reason);//取消匹配响应
     void matchResultPush(bool result,QString reason);//匹配结果推送
+
+    void getColorResponse(int color);//获取颜色响应
+    void chessDownResponse(int x, int y, bool success, bool win);//落子响应
 
     void chatResponse(QString msg);//聊天响应信号
 

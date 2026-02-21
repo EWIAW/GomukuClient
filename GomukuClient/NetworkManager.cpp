@@ -163,10 +163,21 @@ void NetworkManager::parseMessage(QJsonDocument doc)
     }
     else if(protocolId == 2006)// 匹配结果推送
     {
-//        qDebug()<<"处理2006协议";
         bool result = jsondata["success"].toBool();
         QString reason = jsondata["reason"].toString();
+        int color = jsondata["color"].toInt();
         emit matchResultPush(result,reason);
+        emit getColorResponse(color);
+    }
+    else if(protocolId == CHESS_DOWN_ACK)
+    {
+        int x = jsondata["x"].toInt();
+        int y = jsondata["y"].toInt();
+        bool success = jsondata["success"].toBool();
+        bool win;
+        if(success)
+            win = jsondata["win"].toBool();
+        emit chessDownResponse(x,y,success,win);
     }
     else if(protocolId == 4002)//聊天响应信号
     {

@@ -36,6 +36,8 @@ private slots:
 
     //与NetworkManager通信槽函数
     void onMessageResult(QString msg);//聊天消息响应
+    void onGetColorResult(int color);//获取棋子颜色响应
+    void onChessDownResult(int x, int y, bool success, bool win);//落子响应
 
 private:
     void drawBoard(QPainter &painter);      // 绘制棋盘网格
@@ -45,6 +47,7 @@ private:
 private:
     Ui::GameRoomWidget *ui;
 
+    bool _play;//用来判断是否轮到该玩家落子
     int _board[BOARD_SIZE][BOARD_SIZE];//棋盘
     int _selfColor;//己方棋子颜色
     int _otherColor;//对方棋子颜色

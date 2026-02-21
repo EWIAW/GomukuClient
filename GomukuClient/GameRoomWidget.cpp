@@ -18,6 +18,8 @@ GameRoomWidget::GameRoomWidget(QWidget *parent) :
     //与NetworkManager通信信号槽连接
     NetworkManager* NM = NetworkManager::instance();
     connect(NM,&NetworkManager::chatResponse,this,&GameRoomWidget::onMessageResult);
+    connect(NM,&NetworkManager::getColorResponse,this,&GameRoomWidget::onGetColorResult);
+    connect(NM,&NetworkManager::chessDownResponse,this,&GameRoomWidget::onChessDownResult);
 }
 
 GameRoomWidget::~GameRoomWidget()
@@ -31,6 +33,7 @@ void GameRoomWidget::initGame()
         for (int j = 0; j < BOARD_SIZE; ++j)
             _board[i][j] = 0;
 
+    _play = false;
     _selfColor = _otherColor = 1;
 }
 
@@ -45,8 +48,8 @@ void GameRoomWidget::paintEvent(QPaintEvent *event)
 
 void GameRoomWidget::mousePressEvent(QMouseEvent *event)
 {
-    // 如果游戏已经结束或点击的不是左键，则忽略事件
-    if (event->button() != Qt::LeftButton)
+    // 如果点击的不是左键 或 未轮到该玩家落子，则忽略事件
+    if (event->button() != Qt::LeftButton || _play == false)
     {
         return;
     }
@@ -67,8 +70,14 @@ void GameRoomWidget::mousePressEvent(QMouseEvent *event)
         {
             // 在该位置放置当前玩家的棋子
             _board[row][col] = _selfColor;
-
+            _play = false;
             update(); // 请求重绘界面，显示最新状态
+
+            //发送落子信息
+            QJsonObject message;
+            message["x"] = row;
+            message["y"] = col;
+            NetworkManager::instance()->sendMessage(ProtocolId::CHESS_DOWN_REQ,message);
         }
     }
 }
@@ -92,6 +101,43 @@ void GameRoomWidget::onSendButtonClicked()
 void GameRoomWidget::onMessageResult(QString msg)
 {
     ui->chat_textBrowser->append(msg);
+}
+
+void GameRoomWidget::onGetColorResult(int color)
+{
+    if(color == 1)
+    {
+        _play = true;
+        _selfColor = 1;
+        _otherColor = 2;
+        QMessageBox::warning(this,"提示","先手");
+    }
+    else
+    {
+        _play = false;
+        _selfColor = 2;
+        _otherColor = 1;
+        QMessageBox::warning(this,"提示","后手");
+    }
+}
+
+void GameRoomWidget::onChessDownResult(int x, int y, bool success, bool win)
+{
+    _board[x][y] = _otherColor;
+    _play = true;
+    update();
+
+    if(success)
+    {
+        if(win)
+        {
+            QMessageBox::warning(this,"提示","恭喜你获胜了");
+        }
+        else
+        {
+            QMessageBox::warning(this,"提示","很遗憾，输了");
+        }
+    }
 }
 
 void GameRoomWidget::drawBoard(QPainter &painter)
