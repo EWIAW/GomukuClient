@@ -54,6 +54,8 @@ void MainWidget::initAllGoto()//连接所有跳转信号
     //游戏大厅界面的跳转
     connect(m_gamehallWidget,&GameHallWidget::gotoGameRoomWidget_Signal,this,&MainWidget::gotoGameRoomWidget);
 
+    //游戏房间的跳转
+    connect(m_gameroomWidget,&GameRoomWidget::gotoGameHallWidget_Signal,this,&MainWidget::gotoGameHallWidget);
 }
 
 void MainWidget::gotoRegisterWidget()

@@ -30,6 +30,9 @@ protected:
     void paintEvent(QPaintEvent *event) override;//重写paintEvent事件处理函数
     void mousePressEvent(QMouseEvent *event) override;//重写mousePressEvent事件处理函数
 
+signals:
+    void gotoGameHallWidget_Signal();
+
 private slots:
     //自身信号槽函数
     void onSendButtonClicked();//点击发送消息按钮
@@ -43,6 +46,8 @@ private:
     void drawBoard(QPainter &painter);      // 绘制棋盘网格
     void drawStarPoints(QPainter &painter); // 绘制天元和星位标记
     void drawStones(QPainter &painter);     // 绘制棋子
+
+    void showMessageBox(QString message);//显示信息对话框
 
 private:
     Ui::GameRoomWidget *ui;

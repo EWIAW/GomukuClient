@@ -131,11 +131,11 @@ void GameRoomWidget::onChessDownResult(int x, int y, bool success, bool win)
     {
         if(win)
         {
-            QMessageBox::warning(this,"提示","恭喜你获胜了");
+            showMessageBox("恭喜你获胜了");
         }
         else
         {
-            QMessageBox::warning(this,"提示","很遗憾，输了");
+            showMessageBox("很遗憾，输了");
         }
     }
 }
@@ -216,5 +216,31 @@ void GameRoomWidget::drawStones(QPainter &painter)
                 painter.drawEllipse(x - 12, y - 12, 24, 24);
             }
         }
+    }
+}
+
+void GameRoomWidget::showMessageBox(QString message)
+{
+    QMessageBox msgBox(this);
+    msgBox.setWindowTitle("游戏结束");
+    msgBox.setIcon(QMessageBox::Information);
+
+    //根据比赛结果设置消息文本
+    msgBox.setText(message);
+
+    //移除默认按钮
+    msgBox.setStandardButtons(QMessageBox::NoButton);
+
+    //添加自定义按钮
+    QPushButton* returnHallBtn = msgBox.addButton("返回游戏大厅",QMessageBox::AcceptRole);
+
+    msgBox.exec();
+
+    if(msgBox.clickedButton() == returnHallBtn)
+    {
+        QJsonObject message;
+        NetworkManager::instance()->sendMessage(ProtocolId::EXIT_ROOM_REQ,message);
+        initGame();//重置棋盘，给下一个对局使用
+        emit gotoGameHallWidget_Signal();
     }
 }
