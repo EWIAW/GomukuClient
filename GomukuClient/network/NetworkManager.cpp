@@ -108,8 +108,6 @@ void NetworkManager::onReadyRead()
         qDebug()<<"接收实际数据大小 : "<<4+hostLength<<" , 有效数据大小 : "<<hostLength;
         qDebug()<<doc;
         qDebug()<<" ";
-//        QThread::msleep(1000);  // 暂停1秒
-        // 解析成json类型并处理
         parseMessage(doc);
     }
 }
@@ -173,10 +171,18 @@ void NetworkManager::parseMessage(QJsonDocument doc)
     {
         int x = jsondata["x"].toInt();
         int y = jsondata["y"].toInt();
-        bool success = jsondata["success"].toBool();
+        bool success = jsondata["success"].toBool();//判断游戏对局是否结束
         bool win;
-        if(success)
+        if(success)//游戏对局已结束
+        {
             win = jsondata["win"].toBool();
+            QJsonObject userInfo;
+            userInfo["userPoint"] = jsondata["userPoint"];
+            userInfo["totalCount"] = jsondata["totalCount"];
+            userInfo["winCount"] = jsondata["winCount"];
+            emit userBattleInfoResponse(userInfo);
+        }
+
         emit chessDownResponse(x,y,success,win);
     }
     else if(protocolId == 4002)//聊天响应信号

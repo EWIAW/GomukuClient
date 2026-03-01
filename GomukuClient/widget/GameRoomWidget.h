@@ -4,8 +4,10 @@
 #include <QWidget>
 #include <QJsonObject>
 #include <QVector>
+#include <QLabel>
+#include <QShowEvent>
 
-#include "NetworkManager.h"
+#include "network/NetworkManager.h"
 
 #define BOARD_SIZE 15 // 棋盘大小
 #define CELL_SIZE 30  // 格子大小
@@ -29,6 +31,7 @@ public:
 protected:
     void paintEvent(QPaintEvent *event) override;//重写paintEvent事件处理函数
     void mousePressEvent(QMouseEvent *event) override;//重写mousePressEvent事件处理函数
+    void showEvent(QShowEvent *event) override;//重写showEvent事件处理函数
 
 signals:
     void gotoGameHallWidget_Signal();
@@ -48,6 +51,7 @@ private:
     void drawStones(QPainter &painter);     // 绘制棋子
 
     void showMessageBox(QString message);//显示信息对话框
+    void showTopNotification(QString message);//显示顶部通知
 
 private:
     Ui::GameRoomWidget *ui;
@@ -56,6 +60,10 @@ private:
     int _board[BOARD_SIZE][BOARD_SIZE];//棋盘
     int _selfColor;//己方棋子颜色
     int _otherColor;//对方棋子颜色
+    
+    QLabel *_notificationLabel; // 顶部通知标签
+    bool _hasReceivedColor;//是否已经收到颜色信息
+    bool _hasShownColorNotification;//是否已经显示过颜色通知
 };
 
 #endif // GAMEROOMWIDGET_H

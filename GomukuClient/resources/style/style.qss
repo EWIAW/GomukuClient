@@ -1,0 +1,222 @@
+/* ==================== 登录界面样式 ==================== */
+
+/* 登录按钮样式 */
+LoginWidget QPushButton#login_pushButton {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    min-width: 250px;
+    min-height: 35px;
+}
+
+LoginWidget QPushButton#login_pushButton:hover {
+    background-color: #45a049;
+}
+
+LoginWidget QPushButton#login_pushButton:pressed {
+    background-color: #3d8b40;
+}
+
+/* 注册按钮样式 */
+LoginWidget QPushButton#register_pushButton {
+    background-color: #2196F3;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    min-width: 250px;
+    min-height: 35px;
+}
+
+LoginWidget QPushButton#register_pushButton:hover {
+    background-color: #0b7dda;
+}
+
+LoginWidget QPushButton#register_pushButton:pressed {
+    background-color: #0a6ebd;
+}
+
+/* ==================== 注册界面样式 ==================== */
+
+/* 注册按钮样式 */
+RegisterWidget QPushButton#register_pushButton {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    min-width: 250px;
+    min-height: 35px;
+}
+
+RegisterWidget QPushButton#register_pushButton:hover {
+    background-color: #45a049;
+}
+
+RegisterWidget QPushButton#register_pushButton:pressed {
+    background-color: #3d8b40;
+}
+
+/* ==================== 游戏大厅界面样式 ==================== */
+
+/* 匹配按钮样式（开始匹配 - 绿色） */
+GameHallWidget QPushButton#match_pushButton {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    min-width: 120px;
+    min-height: 40px;
+}
+
+GameHallWidget QPushButton#match_pushButton:hover {
+    background-color: #45a049;
+}
+
+GameHallWidget QPushButton#match_pushButton:pressed {
+    background-color: #3d8b40;
+}
+
+/* 匹配中状态：取消匹配 - 红色 */
+GameHallWidget QPushButton#match_pushButton[matching="true"] {
+    background-color: #f44336;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+    min-width: 120px;
+    min-height: 40px;
+}
+
+GameHallWidget QPushButton#match_pushButton[matching="true"]:hover {
+    background-color: #da190b;
+}
+
+GameHallWidget QPushButton#match_pushButton[matching="true"]:pressed {
+    background-color: #bd081c;
+}
+
+/* 用户信息文本框样式 */
+GameHallWidget QTextBrowser#userinfo_textBrowser {
+    background-color: #f5f5f5;
+    color: #333333;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+    min-height: 100px;
+}
+
+/* ==================== 游戏房间界面样式 ==================== */
+
+/* 顶部通知标签样式 */
+GameRoomWidget QLabel#notificationLabel {
+    background-color: rgba(0, 128, 0, 0.8);
+    color: white;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* ==================== 通用按钮样式 ==================== */
+
+/* 所有按钮的基础样式 */
+QPushButton {
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 10px 20px;
+}
+
+/* 所有按钮的悬停效果 */
+QPushButton:hover {
+}
+
+/* ==================== 通用文本框样式 ==================== */
+
+/* 所有文本框的基础样式 */
+QLineEdit {
+    border: 1px solid #cccccc;
+    border-radius: 5px;
+    padding: 8px;
+    font-size: 14px;
+    min-height: 30px;
+}
+
+QLineEdit:focus {
+    border: 2px solid #4CAF50;
+}
+
+/* ==================== 通用文本浏览器样式 ==================== */
+
+/* 所有文本浏览器的基础样式 */
+QTextBrowser {
+    background-color: #f5f5f5;
+    color: #333333;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+}
+
+/* ==================== 消息框样式 ==================== */
+
+/* QMessageBox样式 */
+QMessageBox {
+    background-color: #ffffff;
+    color: #333333;
+    border: 1px solid #cccccc;
+    border-radius: 8px;
+    padding: 15px;
+    min-width: 300px;
+}
+
+QMessageBox QLabel {
+    color: #333333;
+    font-size: 14px;
+    min-height: 20px;
+}
+
+QMessageBox QPushButton {
+    background-color: #4CAF50;
+    color: white;
+    border-radius: 5px;
+    border: none;
+    font-size: 14px;
+    font-weight: bold;
+    padding: 8px 20px;
+    min-width: 80px;
+    min-height: 30px;
+}
+
+QMessageBox QPushButton:hover {
+    background-color: #45a049;
+}
+
+QMessageBox QPushButton:pressed {
+    background-color: #3d8b40;
+}
+
+QMessageBox QTextBrowser {
+    background-color: #f5f5f5;
+    color: #333333;
+    border: 1px solid #dddddd;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 14px;
+}

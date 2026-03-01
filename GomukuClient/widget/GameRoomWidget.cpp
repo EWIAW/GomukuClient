@@ -5,13 +5,26 @@
 #include <QPainter>
 #include <QMouseEvent>
 #include <QDebug>
+#include <QTimer>
 
 GameRoomWidget::GameRoomWidget(QWidget *parent) :
     QWidget(parent),
-    ui(new Ui::GameRoomWidget)
+    ui(new Ui::GameRoomWidget),
+    _notificationLabel(nullptr),
+    _hasReceivedColor(false),
+    _hasShownColorNotification(false)
 {
     ui->setupUi(this);
     initGame();
+    
+    //初始化顶部通知标签
+    _notificationLabel = new QLabel(this);
+    _notificationLabel->setObjectName("notificationLabel");
+    _notificationLabel->setAlignment(Qt::AlignCenter);
+    _notificationLabel->setVisible(false);
+    _notificationLabel->setGeometry(200, 50, 400, 40); // 顶部中间位置
+    _notificationLabel->raise(); // 确保在最上层显示
+    
     //自身信号槽连接
     connect(ui->send_pushButton,&QPushButton::clicked,this,&GameRoomWidget::onSendButtonClicked);
 
@@ -105,38 +118,76 @@ void GameRoomWidget::onMessageResult(QString msg)
 
 void GameRoomWidget::onGetColorResult(int color)
 {
+    qDebug()<<"进入GameRoomWidget::onGetColorResult函数";
     if(color == 1)
     {
         _play = true;
         _selfColor = 1;
         _otherColor = 2;
-        QMessageBox::warning(this,"提示","先手");
+        _hasReceivedColor = true;
+        // 存储颜色信息，等待窗口显示后再通知
     }
     else
     {
         _play = false;
         _selfColor = 2;
         _otherColor = 1;
-        QMessageBox::warning(this,"提示","后手");
+        _hasReceivedColor = true;
+        // 存储颜色信息，等待窗口显示后再通知
+    }
+}
+
+void GameRoomWidget::showEvent(QShowEvent *event)
+{
+    QWidget::showEvent(event);
+    
+    // 当窗口显示时，检查是否有未显示的颜色通知
+    if (_hasReceivedColor && !_hasShownColorNotification) {
+        qDebug()<<"窗口显示，检查颜色通知";
+        if (_selfColor == 1) {
+            showTopNotification("您是先手，执黑棋");
+        } else {
+            showTopNotification("您是后手，执白棋");
+        }
+        _hasShownColorNotification = true;
+    }
+}
+
+void GameRoomWidget::showTopNotification(QString message)
+{
+    if (_notificationLabel) {
+        _notificationLabel->setText(message);
+        _notificationLabel->setVisible(true);
+        
+        //3秒后自动隐藏通知
+        QTimer::singleShot(3000, this, [=]() {
+            _notificationLabel->setVisible(false);
+        });
     }
 }
 
 void GameRoomWidget::onChessDownResult(int x, int y, bool success, bool win)
 {
-    _board[x][y] = _otherColor;
-    _play = true;
-    update();
-
     if(success)
     {
         if(win)
         {
+            _board[x][y] = _selfColor;
+            update();
             showMessageBox("恭喜你获胜了");
         }
         else
         {
+            _board[x][y] = _otherColor;
+            update();
             showMessageBox("很遗憾，输了");
         }
+    }
+    else
+    {
+        _board[x][y] = _otherColor;
+        update();
+        _play = true;
     }
 }
 

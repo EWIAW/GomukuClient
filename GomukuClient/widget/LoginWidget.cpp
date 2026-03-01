@@ -53,4 +53,8 @@ void LoginWidget::onLoginResult(bool success,QString reason)
     {
         emit gotoGameHallWidget_Signal();//发送信号告诉MainWidget跳转页面
     }
+    else
+    {
+        ui->password_lineEdit->clear();//登录失败时清空密码输入框
+    }
 }

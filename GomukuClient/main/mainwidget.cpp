@@ -2,12 +2,22 @@
 #include "ui_mainwidget.h"
 
 #include <QVBoxLayout>
+#include <QFile>
+#include <QTextStream>
 MainWidget::MainWidget(QWidget *parent)
     : QWidget(parent)
     , ui(new Ui::MainWidget)
     , m_stackWidget(new QStackedWidget(this))
 {
     ui->setupUi(this);
+
+    //加载样式表
+    QFile styleFile(":/styles/style.qss");
+    if (styleFile.open(QFile::ReadOnly)) {
+        QString styleSheet = QTextStream(&styleFile).readAll();
+        qApp->setStyleSheet(styleSheet);
+        styleFile.close();
+    }
 
     initAllWidget();//创建所有界面
     initAllGoto();//连接所有跳转信号

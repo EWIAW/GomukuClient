@@ -47,4 +47,8 @@ void RegisterWidget::onRegisterResult(bool success,QString reason)
     {
         emit gotoLoginWidget_Signal();//发送信号告诉MainWidget跳转页面
     }
+    else
+    {
+        ui->password_lineEdit->clear();//注册失败时清空密码输入框
+    }
 }

@@ -15,31 +15,25 @@ DEFINES += QT_DEPRECATED_WARNINGS
 # You can also select to disable deprecated APIs only up to a certain version of Qt.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
+INCLUDEPATH += \
+    $$PWD/main/ \
+    $$PWD/network/ \
+    $$PWD/widget/ \
+
+include($$PWD/Main/main.pri)
+include($$PWD/network/network.pri)
+include($$PWD/widget/widget.pri)
+
 SOURCES += \
-    GameHallWidget.cpp \
-    GameRoomWidget.cpp \
-    LoginWidget.cpp \
-    NetworkManager.cpp \
-    RegisterWidget.cpp \
-    main.cpp \
-    mainwidget.cpp
 
 HEADERS += \
-    GameHallWidget.h \
-    GameRoomWidget.h \
-    LoginWidget.h \
-    NetworkManager.h \
-    RegisterWidget.h \
-    mainwidget.h
 
 FORMS += \
-    GameHallWidget.ui \
-    GameRoomWidget.ui \
-    LoginWidget.ui \
-    RegisterWidget.ui \
-    mainwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+RESOURCES += \
+    resource.qrc
